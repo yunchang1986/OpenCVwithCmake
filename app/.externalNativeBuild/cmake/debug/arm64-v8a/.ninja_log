@@ -1,0 +1,5 @@
+# ninja log v5
+0	6516	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	53dbb6067566a683
+6518	6956	0	/Users/yuyun/AndroidStudioProjects/OpenCVwithCmake/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	50aa90694e8e59d2
+45	3212	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	53dbb6067566a683
+3212	3773	0	/Users/yuyun/AndroidStudioProjects/OpenCVwithCmake/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	50aa90694e8e59d2

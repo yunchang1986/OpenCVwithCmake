@@ -1,0 +1,21 @@
+{
+  "buildFiles": [
+    "/Users/yuyun/AndroidStudioProjects/OpenCVwithCmake/app/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/yuyun/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/yuyun/AndroidStudioProjects/OpenCVwithCmake/app/.externalNativeBuild/cmake/debug/arm64-v8a --target clean"
+  ],
+  "libraries": {
+    "native-lib-Debug-arm64-v8a": {
+      "artifactName": "native-lib",
+      "buildCommand": "/Users/yuyun/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/yuyun/AndroidStudioProjects/OpenCVwithCmake/app/.externalNativeBuild/cmake/debug/arm64-v8a --target native-lib",
+      "abi": "arm64-v8a",
+      "output": "/Users/yuyun/AndroidStudioProjects/OpenCVwithCmake/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so"
+    },
+    "lib_opencv-Debug-arm64-v8a": {
+      "artifactName": "lib_opencv",
+      "abi": "arm64-v8a",
+      "output": "/Users/yuyun/AndroidStudioProjects/OpenCVwithCmake/opencv/native/libs/arm64-v8a/libopencv_java4.so"
+    }
+  }
+}
