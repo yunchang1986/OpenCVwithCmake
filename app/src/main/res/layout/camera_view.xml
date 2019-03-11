@@ -29,8 +29,8 @@
     <!--Start 및 뒤로가기 버튼-->
     <Button
         android:id="@+id/btn_ocrstart"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
@@ -43,8 +43,8 @@
 
     <Button
         android:id="@+id/btn_finish"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="10dp"

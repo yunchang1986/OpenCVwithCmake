@@ -222,10 +222,12 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
                 mRelativeParams.setMargins(mRoiX, mRoiY, 0, 0);
                 mSurfaceRoiBorder.setLayoutParams(mRelativeParams);
 
+
                 //調整ROI區域
                 mRelativeParams = new RelativeLayout.LayoutParams(mRoiWidth - 5, mRoiHeight - 5);
-                mRelativeParams.setMargins(mRoiX + 5, mRoiY + 5, 0, 0);
+                mRelativeParams.setMargins(mRoiX +1 , mRoiY + 3, 0, 0);
                 mSurfaceRoi.setLayoutParams(mRelativeParams);
+                mImageCapture.setLayoutParams(mRelativeParams);
 
             }
         };
