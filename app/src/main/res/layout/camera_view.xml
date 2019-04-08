@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+
     <!--ROI 영역-->
     <SurfaceView
         android:id="@+id/surface_roi_border"
@@ -26,7 +27,7 @@
         android:background="#00ff0000" />
 
 
-    <!--Start 및 뒤로가기 버튼-->
+    <!--Start and Return-->
     <Button
         android:id="@+id/btn_ocrstart"
         android:layout_width="100dp"
@@ -37,7 +38,7 @@
         android:layout_marginRight="10dp"
         android:background="#7d010000"
         android:onClick="onClickButton"
-        android:text="Start"
+        android:text="@string/btn_capture"
         android:textColor="#ffffff"
         android:textSize="15dp" />
 
@@ -51,7 +52,7 @@
         android:layout_marginBottom="10dp"
         android:background="#7d010000"
         android:onClick="onClickButton"
-        android:text="←"
+        android:text="@string/btn_return"
         android:textColor="#ffffff"
         android:textSize="20dp" />
 
@@ -72,5 +73,31 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
+
+    <ToggleButton
+        android:id="@+id/txt_enhance"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="#7d010000"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:textColor="#ffffff"
+        android:textOff="紙質模式"
+        android:textOn="布料模式" />
+
+    <ToggleButton
+        android:id="@+id/img_rotate"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="110dp"
+        android:background="#7d010000"
+        android:textColor="#ffffff"
+        android:textOff="預留按鈕"
+        android:textOn="預留按鈕" />
 
 </RelativeLayout>

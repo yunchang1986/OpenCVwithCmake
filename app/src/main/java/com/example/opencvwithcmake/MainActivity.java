@@ -33,20 +33,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        // 뷰 선언
+        //建立視圖
         mBtnCameraView = (Button) findViewById(R.id.btn_camera);
         mEditOcrResult = (EditText) findViewById(R.id.edit_ocrresult);
         sTess = new TessBaseAPI();
 
 
-        // Tesseract 인식 언어를 한국어로 설정 및 초기화
+
+        // 將Tesseract識別語言設置為英語並初始化
         lang = "eng";
         datapath = getFilesDir()+ "/tesseract";
 
         if(checkFile(new File(datapath+"/tessdata")))
         {
             sTess.init(datapath, lang);
+//            sTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_WORD);
         }
 
         mBtnCameraView.setOnClickListener(new View.OnClickListener() {
@@ -54,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // 버튼 클릭 시
+                //在點擊按鈕
 
-                // Camera 화면 띄우기
+                //相機屏幕偏移
                 Intent mIttCamera = new Intent(MainActivity.this, com.example.opencvwithcmake.CameraView.class);
                 startActivityForResult(mIttCamera, ACTIVITY_REQUEST_CODE);
 
@@ -66,11 +67,11 @@ public class MainActivity extends AppCompatActivity {
 
     boolean checkFile(File dir)
     {
-        //디렉토리가 없으면 디렉토리를 만들고 그 후에 파일을 카피
+        //如果該目錄不存在，創建一個目錄
         if(!dir.exists() && dir.mkdirs()) {
             copyFiles();
         }
-        //디렉토리가 있지만 파일이 없으면 파일카피 진행
+        //如果目錄存在，取得tess文件路徑，若檔案不存在則拷貝一份
         if(dir.exists()) {
             String datafilepath = datapath + "/tessdata/" + lang + ".traineddata";
             File datafile = new File(datafilepath);
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         {
             if(requestCode== ACTIVITY_REQUEST_CODE)
             {
-                // 받아온 OCR 결과 출력
+                //輸出OCR結果
                 mEditOcrResult.setText(data.getStringExtra("STRING_OCR_RESULT"));
             }
         }

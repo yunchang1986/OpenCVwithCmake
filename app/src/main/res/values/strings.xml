@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">OpenCVwith Cmake</string>
-    <string name="ocr_result_tip">input number</string>
+    <string name="app_name">拍照抓數字</string>
+    <string name="ocr_result_tip">使用拍照擷取數字，或點一下手動輸入</string>
+    <string name="btn_capture">拍照</string>
+    <string name="btn_return">←</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

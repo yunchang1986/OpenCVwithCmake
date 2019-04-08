@@ -22,18 +22,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.*;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.opencv.core.Size;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import static com.example.opencvwithcmake.MainActivity.sTess;
@@ -73,6 +78,15 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
     private Mat m_matRoi;
     private boolean mStartFlag = false;
 
+    //cameraFrame裡的圖像處理參數
+    /*增強文字*/
+    private ToggleButton mBtnEnhance = null;
+    private boolean threshold = false;
+
+    /*文字顛倒*/
+    private ToggleButton mBtnRotate = null;
+    private boolean rotateImg = false;
+
     //當前旋轉狀態（底部主頁按鈕的位置）
     private enum mOrientHomeButton {
         Right, Bottom, Left, Top
@@ -84,14 +98,6 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
     static final int PERMISSION_REQUEST_CODE = 1;
     String[] PERMISSIONS = {"android.permission.CAMERA"};
 
-    /*
-     // cpp相關部分。現在不需要
-    static {
-        System.loadLibrary("opencv_java3");
-        System.loadLibrary("native-lib");
-        System.loadLibrary("imported-lib");
-    }
-    */
 
     private boolean hasPermissions(String[] permissions) {
         //驗證權限
@@ -162,6 +168,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+//        mOpenCvCameraView.setMaxFrameSize(1000,1000);
         mOpenCvCameraView.setCameraIndex(0); // front-camera(1),  back-camera(0)
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
@@ -225,7 +232,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
                 //調整ROI區域
                 mRelativeParams = new RelativeLayout.LayoutParams(mRoiWidth - 5, mRoiHeight - 5);
-                mRelativeParams.setMargins(mRoiX +1 , mRoiY + 3, 0, 0);
+                mRelativeParams.setMargins(mRoiX + 1, mRoiY + 3, 0, 0);
                 mSurfaceRoi.setLayoutParams(mRelativeParams);
                 mImageCapture.setLayoutParams(mRelativeParams);
 
@@ -241,6 +248,44 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
                     Toast.LENGTH_LONG).show();
             finish();
         }
+
+        /*----------------------新增區塊------------------------*/
+        // 圖片增強按鈕
+        mBtnEnhance = (ToggleButton) findViewById(R.id.txt_enhance);
+
+        // 監聽圖片增強是否啟動
+        mBtnEnhance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                // 消息提示
+                if (compoundButton.isChecked()) {
+                    threshold = true;
+                    Toast.makeText(CameraView.this,
+                            "開啟強調文字,t = " + threshold, Toast.LENGTH_SHORT).show();
+                } else {
+                    threshold = false;
+                    Toast.makeText(CameraView.this,
+                            "開啟強調文字,t = " + threshold, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        mBtnRotate = (ToggleButton) findViewById(R.id.img_rotate);
+        // 監聽圖片旋轉是否啟動
+        mBtnRotate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (compoundButton.isChecked()) {
+                    rotateImg = true;
+                    Toast.makeText(CameraView.this, "翻轉圖片" + rotateImg, Toast.LENGTH_SHORT).show();
+                } else {
+                    rotateImg = false;
+                    Toast.makeText(CameraView.this, "關閉翻轉圖片" + rotateImg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        });
+
     }
 
     public void onClickButton(View v) {
@@ -257,8 +302,17 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
                     mBtnOcrStart.setText("Working...");
                     mBtnOcrStart.setTextColor(Color.LTGRAY);
 
-                    bmp_result = Bitmap.createBitmap(m_matRoi.cols(), m_matRoi.rows(), Bitmap.Config.ARGB_8888);
+                    if(rotateImg != false){
+                        Mat dst = m_matRoi.clone();
+                        Core.flip(m_matRoi, dst, -1);
+                        m_matRoi = dst.clone();
+                    }
 
+                    if (threshold != false) {
+                        img_enhance();
+                    }
+
+                    bmp_result = Bitmap.createBitmap(m_matRoi.cols(), m_matRoi.rows(), Bitmap.Config.ARGB_8888);
                     Utils.matToBitmap(m_matRoi, bmp_result);
 
                     //在ROI區域顯示捕獲的圖像
@@ -314,6 +368,8 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
     public void rotateViews(int degree) {
         mBtnOcrStart.setRotation(degree);
         mBtnFinish.setRotation(degree);
+        mBtnEnhance.setRotation(degree);
+        mBtnRotate.setRotation(degree);
         mTextOcrResult.setRotation(degree);
 
         switch (degree) {
@@ -323,7 +379,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
                 //更改ROI縮放比率
                 m_dWscale = (double) 1 / 2;
-                m_dHscale = (double) 1 / 2;
+                m_dHscale = (double) 1 / 6;
 
 
                 //調整結果TextView位置
@@ -338,10 +394,13 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
             case 90:
             case 270:
 
-                m_dWscale = (double) 1 / 4;    //h (반대)
-                m_dHscale = (double) 3 / 4;    //w
+//                m_dWscale = (double) 1 / 4;    //h
+                m_dWscale = (double) 0.13;    //h
+//                m_dHscale = (double) 3 / 4;    //w
+                m_dHscale = (double) 0.9;    //w
 
-                mRelativeParams = new RelativeLayout.LayoutParams(convertDpToPixel(300), ViewGroup.LayoutParams.WRAP_CONTENT);
+//                mRelativeParams = new RelativeLayout.LayoutParams(convertDpToPixel(300), ViewGroup.LayoutParams.WRAP_CONTENT);
+                mRelativeParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 mRelativeParams.setMargins(convertDpToPixel(15), 0, 0, 0);
                 mRelativeParams.addRule(RelativeLayout.CENTER_VERTICAL);
                 mTextOcrResult.setLayoutParams(mRelativeParams);
@@ -395,7 +454,8 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
         if (!OpenCVLoader.initDebug()) {
             Log.d(TAG, "onResume :: Internal OpenCV library not found.");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, this, mLoaderCallback);
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
+            //修改opencv  版本
         } else {
             Log.d(TAG, "onResume :: OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
@@ -442,10 +502,53 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
         //將ROI區域轉換為黑白區域
         m_matRoi = img_input.submat(mRectRoi);
         Imgproc.cvtColor(m_matRoi, m_matRoi, Imgproc.COLOR_RGBA2GRAY);
-        Imgproc.cvtColor(m_matRoi, m_matRoi, Imgproc.COLOR_GRAY2RGBA);
+//        Imgproc.cvtColor(m_matRoi, m_matRoi, Imgproc.COLOR_GRAY2RGBA);
         m_matRoi.copyTo(img_input.submat(mRectRoi));
         return img_input;
     }
+
+
+    private void img_enhance() {
+        final Size kernelSize = new Size(3, 3);
+        final Point anchor = new Point(-1, -1);
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, kernelSize);
+
+        Imgproc.erode(m_matRoi, m_matRoi, kernel, anchor, 3);
+        Imgproc.GaussianBlur(m_matRoi, m_matRoi, kernelSize, 0);
+        Imgproc.dilate(m_matRoi, m_matRoi, kernel, anchor, 3);
+        Imgproc.threshold(m_matRoi, m_matRoi, 70, 255, Imgproc.THRESH_BINARY);
+//        Imgproc.threshold(m_matRoi, m_matRoi, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+    }
+
+    private Mat img_cv2D() {
+        Point anchor;
+        int ind = 0;
+        double delta;
+        int ddepth;
+        int kernel_size;
+        Mat kernel = new Mat();
+
+
+        anchor = new Point(-1, -1);
+        delta = 0.0;
+        ddepth = -1;
+
+        kernel_size = 3 + 2 * (ind % 5);
+        Mat ones = Mat.ones(kernel_size, kernel_size, CvType.CV_32F);
+        Core.multiply(ones, new Scalar(1 / (double) (kernel_size * kernel_size)), kernel);
+        Imgproc.filter2D(m_matRoi, m_matRoi, ddepth, kernel, anchor, delta, Core.BORDER_DEFAULT);
+        return m_matRoi;
+    }
+
+//    private void img_dilate() {
+//        final Size kernelSize = new Size(3, 3);
+//        final Point anchor = new Point(-1, -1);
+//        final int iterations = 5;
+//        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, kernelSize);
+//        Imgproc.dilate(m_matRoi, m_matRoi, kernel , anchor , iterations);
+//        Imgproc.GaussianBlur(m_matRoi, m_matRoi, kernelSize,0);
+//
+//    }
 
 
     private class AsyncTess extends AsyncTask<Bitmap, Integer, String> {
@@ -453,6 +556,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
         @Override
         protected String doInBackground(Bitmap... mRelativeParams) {
             //執行Tesseract OCR
+
             sTess.setImage(bmp_result);
 
             return sTess.getUTF8Text();
@@ -462,10 +566,23 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
             //完成後更改按鈕屬性並打印結果
 
             mBtnOcrStart.setEnabled(true);
-            mBtnOcrStart.setText("Retry");
+            mBtnOcrStart.setText("重試");
             mBtnOcrStart.setTextColor(Color.WHITE);
 
             mStartFlag = true;
+            //result = result.replaceAll("//","");
+            result = result.replaceAll("\\s+", ""); //刪除連續空格
+            //result = result.replaceAll("O|o", "0"); //轉換英文字母O變成零
+
+
+//            String regex = "\\{\\d*";
+//            Pattern pattern = Pattern.compile("\\{[\\d]*");
+//            Matcher matcher = pattern.matcher(result);
+//
+//            if (matcher.find()) {
+//                result = matcher.group();
+//            }
+
 
             m_strOcrResult = result;
             mTextOcrResult.setText(m_strOcrResult);
