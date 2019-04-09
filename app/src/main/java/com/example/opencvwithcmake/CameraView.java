@@ -28,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import java.util.regex.*;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -40,6 +41,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
+
 
 import static com.example.opencvwithcmake.MainActivity.sTess;
 
@@ -252,7 +254,6 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
         /*----------------------新增區塊------------------------*/
         // 圖片增強按鈕
         mBtnEnhance = (ToggleButton) findViewById(R.id.txt_enhance);
-
         // 監聽圖片增強是否啟動
         mBtnEnhance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -270,6 +271,8 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
             }
         });
 
+
+        // 圖片旋轉按鈕
         mBtnRotate = (ToggleButton) findViewById(R.id.img_rotate);
         // 監聽圖片旋轉是否啟動
         mBtnRotate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -341,10 +344,10 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
                     //刪除ImageView使用的捕獲圖像
                     mImageCapture.setImageBitmap(null);
-                    mTextOcrResult.setText(R.string.ocr_result_tip);
+                    mTextOcrResult.setText(R.string.ocr_result_preview);
 
                     mBtnOcrStart.setEnabled(true);
-                    mBtnOcrStart.setText("Start");
+                    mBtnOcrStart.setText(R.string.btn_capture);
                     mBtnOcrStart.setTextColor(Color.WHITE);
 
                     mStartFlag = false;
@@ -353,7 +356,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
                 break;
 
 
-            //單擊“後退”按鈕時
+            //點擊回去按鈕時
             case R.id.btn_finish:
                 //將識別結果傳遞給MainActivity並退出
                 Intent intent = getIntent();
@@ -372,6 +375,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
         mBtnRotate.setRotation(degree);
         mTextOcrResult.setRotation(degree);
 
+
         switch (degree) {
             //landscape
             case 0:
@@ -384,7 +388,7 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
 
                 //調整結果TextView位置
                 mRelativeParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                mRelativeParams.setMargins(0, convertDpToPixel(20), 0, 0);
+                mRelativeParams.setMargins(convertDpToPixel(20), 0, 0, 0);
                 mRelativeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 mTextOcrResult.setLayoutParams(mRelativeParams);
 
@@ -570,23 +574,52 @@ public class CameraView extends Activity implements CameraBridgeViewBase.CvCamer
             mBtnOcrStart.setTextColor(Color.WHITE);
 
             mStartFlag = true;
-            //result = result.replaceAll("//","");
-            result = result.replaceAll("\\s+", ""); //刪除連續空格
-            //result = result.replaceAll("O|o", "0"); //轉換英文字母O變成零
+//            result = result.replaceAll("//","");
 
-
-//            String regex = "\\{\\d*";
-//            Pattern pattern = Pattern.compile("\\{[\\d]*");
-//            Matcher matcher = pattern.matcher(result);
+            result = convert2Digit(result);
 //
-//            if (matcher.find()) {
-//                result = matcher.group();
-//            }
+//            m_strOcrResult = result;
+            mTextOcrResult.setText(result);
+
+        }
+
+        private String convert2Digit(String result) {
+            int digit_len = 0;
+            boolean startChar = false;
+            String pattern = "(^[{(<])";
+
+            boolean isMatch = Pattern.matches(pattern, result);
+
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(result);
+            if (m.find( )) {
+                result = m.group(0);
+            }
 
 
-            m_strOcrResult = result;
-            mTextOcrResult.setText(m_strOcrResult);
+            result = result.replaceAll("O|o", "0"); //轉換英文字母O變成零
+            result = result.replaceAll("I|i", "1"); //轉換英文字母I變成1
+            result = result.replaceAll("\\s+", ""); //刪除連續空格
+            result = result.replaceAll("\\D", ""); //刪除非數字
 
+
+
+
+            digit_len = result.length();
+
+            if (digit_len == 10) {
+
+                result = result;
+
+            } else if (digit_len > 10) {
+
+                result = result.substring(0,10);
+
+            } else {
+                result = "數字不足";
+            }
+
+            return result;
         }
     }
 }

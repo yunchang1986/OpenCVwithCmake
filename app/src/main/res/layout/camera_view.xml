@@ -56,16 +56,18 @@
         android:textColor="#ffffff"
         android:textSize="20dp" />
 
-    <!-- OCR 결과 및 캡쳐이미지 출력-->
+    <!-- OCR show area-->
     <TextView
         android:id="@+id/text_ocrresult"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:padding="15sp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="15dp"
-        android:text="@string/ocr_result_tip"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="20dp" />
+        android:background="#ffffff"
+        android:text="@string/ocr_result_preview"
+        android:textColor="#FF5252"
+        android:textSize="24dp" />
 
     <ImageView
         android:id="@+id/image_capture"
@@ -80,10 +82,8 @@
         android:layout_height="80dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:background="#7d010000"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
-        android:textColor="#ffffff"
         android:textOff="紙質模式"
         android:textOn="布料模式" />
 
@@ -95,9 +95,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
         android:layout_marginRight="110dp"
-        android:background="#7d010000"
-        android:textColor="#ffffff"
-        android:textOff="預留按鈕"
-        android:textOn="預留按鈕" />
+        android:textOff="上下翻轉"
+        android:textOn="關閉翻轉" />
 
 </RelativeLayout>

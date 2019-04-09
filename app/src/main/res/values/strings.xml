@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">拍照抓數字</string>
-    <string name="ocr_result_tip">使用拍照擷取數字，或點一下手動輸入</string>
+    <string name="ocr_return">\n訂單編號\n</string>
+    <string name="ocr_result_tip">請按下拍照擷取數字，或點一下訂單編號手動輸入</string>
+    <string name="ocr_result_preview">顯示擷取預覽</string>
+
     <string name="btn_capture">拍照</string>
     <string name="btn_return">←</string>
 
